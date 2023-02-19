@@ -44,19 +44,6 @@
   :safe 'integerp
   :group 'surface)
 
-(defconst surface-ts-mode--brackets
-  '("%>" "--%>" "-->" "/>" "<!" "<!--" "<" "<%!--" "<%" "<%#"
-    "<%%=" "<%=" "</" "</:" "<:" ">" "{" "}"))
-
-(defconst surface-ts-mode-sexp-regexp
-  (rx bol
-      (or "directive" "tag" "component" "slot"
-          "attribute" "attribute_value" "quoted_attribute_value")
-      eol))
-
-(defconst surface-ts-mode--brackets-vector
-  (apply #'vector surface-ts-mode--brackets))
-
 (defvar surface-ts-mode-default-grammar-sources
   '((surface . ("https://github.com/wkirschbaum/tree-sitter-surface.git"))))
 
@@ -108,26 +95,6 @@
      `([(attribute_value)] @font-lock-constant-face)))
   "Tree-sitter font-lock settings.")
 
-(defun surface-ts-mode--comment-region (beg end &optional _arg)
-  "Comments the region between BEG and END."
-  (save-excursion
-    (goto-char beg)
-    (insert comment-start " ")
-    (goto-char end)
-    (goto-char (pos-eol))
-    (forward-comment (- (point-max)))
-    (insert " " comment-end)))
-
-(defun surface-ts-mode--defun-name (node)
-  "Return the name of the defun NODE.
-Return nil if NODE is not a defun node or doesn't have a name."
-  (pcase (treesit-node-type node)
-    ((or "component" "slot" "tag")
-     (string-trim
-      (treesit-node-text
-       (treesit-node-child (treesit-node-child node 0) 1) nil)))
-    (_ nil)))
-
 (defun surface-ts-install-grammar ()
   "Experimental function to install the tree-sitter-surface grammar."
   (interactive)
@@ -160,14 +127,6 @@ Return nil if NODE is not a defun node or doesn't have a name."
                nil)
            t))))
 
-(defun surface-ts-mode--forward-sexp (&optional arg)
-  (interactive "^p")
-  (or arg (setq arg 1))
-  (funcall
-   (if (> arg 0) #'treesit-end-of-thing #'treesit-beginning-of-thing)
-   surface-ts-mode-sexp-regexp
-   (abs arg)))
-
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.sface\\'" . surface-ts-mode))
 
@@ -178,23 +137,6 @@ Return nil if NODE is not a defun node or doesn't have a name."
 
   (when (surface-ts-mode-treesit-ready-p)
     (treesit-parser-create 'surface)
-
-    ;; Comments
-    (setq-local treesit-text-type-regexp
-                (regexp-opt '("comment" "text")))
-
-    (setq-local forward-sexp-function #'surface-ts-mode--forward-sexp)
-
-    ;; Navigation.
-    (setq-local treesit-defun-type-regexp
-                (rx bol (or "component" "tag" "slot") eol))
-    (setq-local treesit-defun-name-function #'surface-ts-mode--defun-name)
-
-    ;; Imenu
-    (setq-local treesit-simple-imenu-settings
-                '(("Component" "\\`component\\'" nil nil)
-                  ("Slot" "\\`slot\\'" nil nil)
-                  ("Tag" "\\`tag\\'" nil nil)))
 
     (setq-local treesit-font-lock-settings surface-ts-mode--font-lock-settings)
 
