@@ -1,6 +1,4 @@
-# Heex Major Mode using tree-sitter
-
-[![MELPA](https://melpa.org/packages/heex-ts-mode-badge.svg)](https://melpa.org/#/heex-ts-mode)
+# Surface Major Mode using tree-sitter
 
 Using [tree-sitter](https://tree-sitter.github.io/tree-sitter/) for font-lock, indentation, imenu and navigation.
 
@@ -17,7 +15,7 @@ you can find all the documentation and installation instructions.
 - Add the following to your emacs config
 
 ```elisp
-(load "[cloned wkirschbaum/heex-ts-mode]/heex-ts-mode.el")
+(load "[cloned wkirschbaum/surface-ts-mode]/surface-ts-mode.el")
 ```
 
 The packages are in different repositories to make it easier for MELPA
@@ -29,7 +27,7 @@ Tree-sitter starter guide: https://git.savannah.gnu.org/cgit/emacs.git/tree/admi
 
 To test you can run `make test` which will download a batch script
 from https://github.com/casouri/tree-sitter-module and compile
-tree-sitter-heex. 
+tree-sitter-surface. 
 
 Requirements:
 

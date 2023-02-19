@@ -1,7 +1,7 @@
 Code:
   (lambda ()
     (setq indent-tabs-mode nil)
-    (heex-ts-mode)
+    (surface-ts-mode)
     (indent-region (point-min) (point-max)))
 
 Point-Char: $
