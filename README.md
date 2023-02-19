@@ -18,25 +18,5 @@ you can find all the documentation and installation instructions.
 (load "[cloned wkirschbaum/surface-ts-mode]/surface-ts-mode.el")
 ```
 
-The packages are in different repositories to make it easier for MELPA
-package management.
+Run `M-x surface-ts-install-grammar`
 
-## Development
-
-Tree-sitter starter guide: https://git.savannah.gnu.org/cgit/emacs.git/tree/admin/notes/tree-sitter/starter-guide?h=emacs-29
-
-To test you can run `make test` which will download a batch script
-from https://github.com/casouri/tree-sitter-module and compile
-tree-sitter-surface. 
-
-Requirements:
-
-- tree-sitter
-- make
-- gcc
-- git
-- curl
-
-Please make sure you run `M-x byte-compile-file` against the updated
-file(s) with an emacs version --without-tree-sitter to ensure it still
-works for non tree-sitter users. 
