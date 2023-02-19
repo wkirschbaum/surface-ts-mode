@@ -5,7 +5,7 @@
 ;; Author           : Wilhelm H Kirschbaum
 ;; Version          : 0.1
 ;; URL              : https://github.com/wkirschbaum/surface-ts-mode
-;; Package-Requires : ((emacs "29"))
+;; Package-Requires : ((emacs "29") (heex-ts-mode "1.1"))
 ;; Created          : February 2023
 ;; Keywords         : surface elixir languages tree-sitter
 
@@ -58,7 +58,7 @@
   (apply #'vector surface-ts-mode--brackets))
 
 (defvar surface-ts-mode-default-grammar-sources
-  '((surface . ("https://github.com/connorlay/tree-sitter-surface.git"))))
+  '((surface . ("https://github.com/wkirschbaum/tree-sitter-surface.git"))))
 
 ;; There seems to be no parent directive block
 ;; so we ignore it for until we learn how surface treesit
@@ -80,7 +80,6 @@
             )) 0)
        ((node-is "end_tag") parent-bol 0)
        ((node-is "end_component") parent-bol 0)
-       ((node-is "end_slot") parent-bol 0)
        ((node-is "/>") parent-bol 0)
        ((node-is ">") parent-bol 0)
        ((parent-is "comment") prev-adaptive-prefix 0)
@@ -89,8 +88,6 @@
        ((parent-is "start_tag") parent-bol ,offset)
        ((parent-is "component") parent-bol ,offset)
        ((parent-is "start_component") parent-bol ,offset)
-       ((parent-is "slot") parent-bol ,offset)
-       ((parent-is "start_slot") parent-bol ,offset)
        ((parent-is "self_closing_tag") parent-bol ,offset)
        (no-node parent-bol ,offset)))))
 
@@ -101,28 +98,14 @@
      :feature 'surface-comment
      '((comment) @font-lock-comment-face)
      :language 'surface
-     :feature 'surface-doctype
-     '((doctype) @font-lock-doc-face)
-     :language 'surface
      :feature 'surface-tag
-     `([(tag_name) (slot_name)] @font-lock-function-name-face)
+     `([(tag_name) (block_name)] @font-lock-function-name-face)
      :language 'surface
      :feature 'surface-attribute
      `((attribute_name) @font-lock-variable-name-face)
      :language 'surface
-     :feature 'surface-keyword
-     `((special_attribute_name) @font-lock-keyword-face)
-     :language 'surface
      :feature 'surface-string
-     `([(attribute_value) (quoted_attribute_value)] @font-lock-constant-face)
-     :language 'surface
-     :feature 'surface-component
-     `([
-        (component_name) @font-lock-function-name-face
-        (module) @font-lock-keyword-face
-        (function) @font-lock-keyword-face
-        "." @font-lock-keyword-face
-        ])))
+     `([(attribute_value)] @font-lock-constant-face)))
   "Tree-sitter font-lock settings.")
 
 (defun surface-ts-mode--comment-region (beg end &optional _arg)
@@ -189,7 +172,7 @@ Return nil if NODE is not a defun node or doesn't have a name."
 (add-to-list 'auto-mode-alist '("\\.sface\\'" . surface-ts-mode))
 
 ;;;###autoload
-(define-derived-mode surface-ts-mode html-mode "Surface"
+(define-derived-mode surface-ts-mode heex-ts-mode "Surface"
   "Major mode for editing Surface, powered by tree-sitter."
   :group 'surface
 
