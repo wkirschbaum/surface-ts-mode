@@ -25,11 +25,12 @@
 ;;; Commentary:
 
 ;; This package defines surface-ts-mode which is a major mode for editing
-;; Elixir and Surface files.
+;; Surface UI files: https://surface-ui.org/.
 
 ;;; Code:
 
 (require 'treesit)
+(require 'heex-ts-mode)
 (eval-when-compile (require 'rx))
 
 (declare-function treesit-parser-create "treesit.c")
