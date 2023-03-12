@@ -3,9 +3,9 @@
 ;; Copyright (C) 2022, 2023 Wilhelm H Kirschbaum
 
 ;; Author           : Wilhelm H Kirschbaum
-;; Version          : 0.1
+;; Version          : 0.2
 ;; URL              : https://github.com/wkirschbaum/surface-ts-mode
-;; Package-Requires : ((emacs "29") (heex-ts-mode "1.1"))
+;; Package-Requires : ((emacs "29") (heex-ts-mode "1.2"))
 ;; Created          : February 2023
 ;; Keywords         : surface elixir languages tree-sitter
 
@@ -34,8 +34,6 @@
 (eval-when-compile (require 'rx))
 
 (declare-function treesit-parser-create "treesit.c")
-(declare-function treesit-node-child "treesit.c")
-(declare-function treesit-node-type "treesit.c")
 (declare-function treesit-install-language-grammar "treesit.el")
 
 (defcustom surface-ts-mode-indent-offset 2
@@ -46,7 +44,7 @@
   :group 'surface)
 
 (defvar surface-ts-mode-default-grammar-sources
-  '((surface . ("https://github.com/wkirschbaum/tree-sitter-surface.git"))))
+  '((surface . ("https://github.com/connorlay/tree-sitter-surface.git"))))
 
 ;; There seems to be no parent directive block
 ;; so we ignore it for until we learn how surface treesit
@@ -64,8 +62,7 @@
             (save-excursion
               (goto-char (treesit-node-start parent))
               (back-to-indentation)
-              (point))
-            )) 0)
+              (point)))) 0)
        ((node-is "end_tag") parent-bol 0)
        ((node-is "end_component") parent-bol 0)
        ((node-is "/>") parent-bol 0)
@@ -117,26 +114,12 @@
              " "
              "tree-sitter library is not compiled with Emacs"))))
 
-(defun surface-ts-mode-treesit-ready-p ()
-  (let ((language-version 14))
-    (and (treesit-ready-p 'surface)
-         (if (< (treesit-language-abi-version 'surface) language-version)
-             (progn
-               (display-warning
-                'treesit
-                (format "Cannot activate tree-sitter for %s, because tree-sitter language version %s or later is required" "surface-ts-mode" language-version))
-               nil)
-           t))))
-
-;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.sface\\'" . surface-ts-mode))
-
 ;;;###autoload
 (define-derived-mode surface-ts-mode heex-ts-mode "Surface"
   "Major mode for editing Surface, powered by tree-sitter."
   :group 'surface
 
-  (when (surface-ts-mode-treesit-ready-p)
+  (when (treesit-ready-p 'surface)
     (treesit-parser-create 'surface)
 
     (setq-local treesit-font-lock-settings surface-ts-mode--font-lock-settings)
@@ -149,6 +132,10 @@
                   () ()))
 
     (treesit-major-mode-setup)))
+
+;;;###autoload
+(if (treesit-ready-p 'surface)
+    (add-to-list 'auto-mode-alist '("\\.sface\\'" . surface-ts-mode)))
 
 (provide 'surface-ts-mode)
 ;;; surface-ts-mode.el ends here
